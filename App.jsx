@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { LayoutDashboard, BarChart2, Terminal, RefreshCw, Activity, ShieldCheck, Zap } from 'lucide-react'
-
-// Contexto e Integraciones
 import { WalletProvider, useWallet } from './WalletContext'
 import { useKamino } from './useKamino'
 import { TxSimulator } from './components/TxSimulator' 
@@ -12,20 +10,16 @@ const fmt = {
   pct: (n) => `${Number(n).toFixed(2)}%`,
 }
 
-// --- Componentes ---
 function VaultRow({ vault }) {
   const { wallet, usdcBalance } = useWallet()
   const [simOpen, setSimOpen] = useState(false)
-
   return (
     <div className="px-4 py-3 flex items-center justify-between hover:bg-white/5 border-l-2 border-transparent hover:border-emerald-500 transition-all">
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 bg-emerald-500/10 flex items-center justify-center text-emerald-500 font-bold text-[10px] border border-emerald-500/20">USDC</div>
         <div>
           <p className="text-xs font-bold text-white tracking-wider">{vault.name}</p>
-          <p className="text-[9px] text-gray-500 uppercase flex items-center gap-1">
-            <ShieldCheck size={10} /> {vault.risk} RISK
-          </p>
+          <p className="text-[9px] text-gray-500 uppercase flex items-center gap-1"><ShieldCheck size={10} /> {vault.risk} RISK</p>
         </div>
       </div>
       <div className="flex items-center gap-6">
@@ -33,10 +27,7 @@ function VaultRow({ vault }) {
           <p className="text-sm font-bold text-emerald-400">{fmt.pct(vault.apy)}</p>
           <p className="text-[9px] text-gray-500 font-mono">LIVE APY</p>
         </div>
-        <button 
-          onClick={() => wallet && setSimOpen(true)}
-          className="px-4 py-1.5 bg-emerald-500/5 border border-emerald-500/40 text-emerald-500 text-[10px] font-black hover:bg-emerald-500 hover:text-black transition-all uppercase tracking-tighter"
-        >
+        <button onClick={() => wallet && setSimOpen(true)} className="px-4 py-1.5 bg-emerald-500/5 border border-emerald-500/40 text-emerald-500 text-[10px] font-black hover:bg-emerald-500 hover:text-black transition-all uppercase tracking-tighter">
           Simulate Vault
         </button>
       </div>
@@ -48,7 +39,6 @@ function VaultRow({ vault }) {
 function Dashboard() {
   const { vaults, loading, totalTvl, bestApy, refresh } = useKamino()
   const { wallet, usdcBalance } = useWallet()
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-end border-b border-white/5 pb-4">
@@ -63,47 +53,35 @@ function Dashboard() {
           </div>
         </div>
         <button onClick={refresh} className="flex items-center gap-2 px-3 py-1 bg-white/5 text-gray-400 hover:text-white border border-white/10 text-[10px] font-bold">
-          <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
-          REFRESH_NODE
+          <RefreshCw size={12} className={loading ? 'animate-spin' : ''} /> REFRESH_NODE
         </button>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-4 bg-gray-900 border border-white/5 group hover:border-emerald-500/30 transition-all">
+        <div className="p-4 bg-gray-900 border border-white/5 hover:border-emerald-500/30 transition-all">
           <p className="text-[10px] text-gray-500 uppercase font-black">Institutional TVL</p>
           <p className="text-3xl font-bold text-white tracking-tighter">${fmt.usd(totalTvl)}</p>
-          <div className="mt-2 text-[9px] text-emerald-500/60 font-mono">NETWORK_STABLE</div>
         </div>
         <div className="p-4 bg-gray-900 border border-emerald-500/40 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-2 opacity-20"><Activity size={40} /></div>
           <p className="text-[10px] text-emerald-500 uppercase font-black">Target Alpha (APY)</p>
           <p className="text-3xl font-bold text-emerald-400 tracking-tighter">{fmt.pct(bestApy)}</p>
-          <div className="mt-2 text-[9px] text-emerald-400 font-mono">OPTIMIZED_BY_KAMINO</div>
         </div>
-        <div className="p-4 bg-gray-900 border border-white/5 group hover:border-emerald-500/30 transition-all">
+        <div className="p-4 bg-gray-900 border border-white/5 hover:border-emerald-500/30 transition-all">
           <p className="text-[10px] text-gray-500 uppercase font-black">Available Liquidity</p>
           <p className="text-3xl font-bold text-white tracking-tighter">{wallet ? usdcBalance : '0.00'}</p>
-          <div className="mt-2 text-[9px] text-gray-500 font-mono uppercase">{wallet ? 'Verified_Mainnet' : 'Waiting_Connection'}</div>
         </div>
       </div>
-
       <div className="bg-gray-900 border border-white/5">
         <div className="p-4 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
-          <h2 className="text-[11px] font-black text-white uppercase tracking-widest flex items-center gap-2">
-            <Zap size={14} className="text-emerald-500" /> Active Yield Opportunities
-          </h2>
+          <h2 className="text-[11px] font-black text-white uppercase tracking-widest flex items-center gap-2"><Zap size={14} className="text-emerald-500" /> Active Yield Opportunities</h2>
           <span className="text-[9px] text-gray-500 font-mono font-bold uppercase">Source: Kamino Finance SDK</span>
         </div>
         <div className="divide-y divide-white/5">
           {!loading && vaults.slice(0, 5).map(v => <VaultRow key={v.id} vault={v} />)}
-          {loading && <div className="p-10 text-center text-[10px] text-gray-500 animate-pulse font-mono">FETCHING_ONCHAIN_DATA...</div>}
         </div>
       </div>
-
       <footer className="flex justify-between items-center text-[9px] text-gray-600 font-mono pt-4 border-t border-white/5">
         <div className="flex gap-4">
           <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> QUICKNODE_HEALTHY: 156ms</span>
-          <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> BIRDEYE_FEED: ACTIVE</span>
         </div>
         <span>SMARTYIELD_V2.0 // SOLANA_FRONTIER_2026</span>
       </footer>
@@ -119,29 +97,13 @@ export default function App() {
           <aside className="w-56 bg-gray-900 border-r border-white/5 p-6 flex flex-col justify-between">
             <div className="space-y-10">
               <div className="flex items-center gap-2 group">
-                <div className="p-2 bg-emerald-500 text-black rounded-sm">
-                  <Terminal size={20} strokeWidth={3} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-black text-white leading-none">SY_TERMINAL</span>
-                  <span className="text-[8px] text-emerald-500 font-bold leading-none mt-1">MAINNET_V2</span>
-                </div>
+                <div className="p-2 bg-emerald-500 text-black rounded-sm"><Terminal size={20} strokeWidth={3} /></div>
+                <div className="flex flex-col"><span className="text-xs font-black text-white leading-none">SY_TERMINAL</span></div>
               </div>
               <nav className="flex flex-col gap-1">
-                <NavLink to="/" className={({isActive}) => `text-[10px] font-black p-3 rounded-sm transition-all flex items-center gap-3 ${isActive ? 'bg-emerald-500/10 text-emerald-400 border-r-2 border-emerald-500' : 'hover:bg-white/5 text-gray-500'}`}>
-                  <LayoutDashboard size={14} /> DASHBOARD
-                </NavLink>
-                <NavLink to="/vaults" className="text-[10px] font-black p-3 hover:bg-white/5 rounded-sm text-gray-500 flex items-center gap-3 transition-all">
-                  <BarChart2 size={14} /> VAULTS_EXPLORER
-                </NavLink>
+                <NavLink to="/" className="text-[10px] font-black p-3 hover:bg-white/5 rounded-sm flex items-center gap-3 transition-all"><LayoutDashboard size={14} /> DASHBOARD</NavLink>
+                <NavLink to="/vaults" className="text-[10px] font-black p-3 hover:bg-white/5 rounded-sm flex items-center gap-3 transition-all"><BarChart2 size={14} /> VAULTS</NavLink>
               </nav>
-            </div>
-            <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-sm">
-              <p className="text-[8px] text-emerald-500/70 font-bold uppercase mb-2">System Status</p>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <span className="text-[10px] text-white font-bold tracking-tighter">ALL SYSTEMS GO</span>
-              </div>
             </div>
           </aside>
           <main className="flex-1 p-10 overflow-y-auto">
@@ -153,5 +115,5 @@ export default function App() {
         </div>
       </WalletProvider>
     </BrowserRouter>
-  ) 
+  )
 }
